@@ -1,0 +1,105 @@
+/* --- BODY & BACKGROUND --- */
+body {
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(120deg, #ffd6f0, #d0e7ff, #fff8d6);
+}
+.page {
+    width: 90%;
+    max-width: 1000px;
+    margin: auto;
+    padding: 20px;
+    transition: opacity 0.5s;
+}
+h2 { text-align: center; color: #0044aa; font-size: 36px; text-shadow: 2px 2px #fff; }
+
+/* --- ANIMATED EMOJIS HEADER --- */
+.header-emojis {
+    text-align: center;
+    margin-bottom: 20px;
+}
+.header-emojis .small-animals {
+    font-size: 50px;
+    margin-bottom: 10px;
+    animation: bounce 2s infinite alternate;
+}
+@keyframes bounce {
+    0% {transform: translateY(0);}
+    50% {transform: translateY(-15px);}
+    100% {transform: translateY(0);}
+}
+
+/* --- TIMER --- */
+.timer {
+    text-align: right;
+    font-size: 28px;
+    font-weight: bold;
+    color: #ff0000;
+    text-shadow: 1px 1px #fff;
+    margin-bottom: 10px;
+}
+.timer.alert { color: #ff8800; animation: pulse 1s infinite; }
+@keyframes pulse {
+    0% {transform: scale(1);}
+    50% {transform: scale(1.2);}
+    100% {transform: scale(1);}
+}
+
+/* --- BUTTONS --- */
+button {
+    padding: 12px 25px;
+    font-size: 20px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    margin: 8px;
+    box-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+    transition: all 0.3s ease;
+}
+button:hover { transform: scale(1.1) rotate(-2deg); }
+.test-btn {
+    background: linear-gradient(45deg, #ff9a9e, #fad0c4);
+    color: #fff;
+}
+.test-btn.completed { background: linear-gradient(45deg, #00c851, #007e33); color: #fff; }
+button.submit-btn { background: linear-gradient(45deg, #33b5e5, #0099cc); color: #fff; }
+button.nav-btn { background: linear-gradient(45deg, #ffbb33, #ff8800); color: #fff; }
+
+/* --- TEST BOX --- */
+.test-box {
+    background: linear-gradient(120deg, #ffffff, #ffe6f2);
+    border-radius: 20px;
+    padding: 25px;
+    margin: 20px 0;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    animation: fadeIn 0.5s;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+.test-box .big-penguin {
+    font-size: 100px;
+    margin-right: 20px;
+    animation: bounce 2s infinite alternate-reverse;
+}
+.test-box #questionContainer {
+    flex: 1;
+}
+.test-box h3 { font-size: 32px; }
+.option { margin: 15px 0; font-size: 26px; }
+.option input { transform: scale(1.5); margin-right: 12px; }
+
+/* --- RESULT BOX --- */
+.result-box {
+    background: linear-gradient(120deg, #ffffff, #d0f0ff);
+    border-radius: 20px;
+    padding: 25px;
+    margin: 20px 0;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    font-size: 24px;
+    text-align: center;
+}
+
+/* --- FADE IN --- */
+@keyframes fadeIn { from {opacity:0;} to {opacity:1;} }

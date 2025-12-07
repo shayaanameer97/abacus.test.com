@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Abacus Level 2 – Fun MCQ Test</title>
+<style>
+/* --- BODY & BACKGROUND --- */
+body {
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(120deg, #ffd6f0, #d0e7ff, #fff8d6);
+}
+.page {
+    width: 90%;
+    max-width: 1000px;
+    margin: auto;
+    padding: 20px;
+    transition: opacity 0.5s;
+}
+h2 { text-align: center; color: #0044aa; font-size: 36px; text-shadow: 2px 2px #fff; }
+
+/* --- ANIMATED EMOJIS HEADER --- */
+.header-emojis {
+    text-align: center;
+    margin-bottom: 20px;
+}
+.header-emojis .small-animals {
+    font-size: 50px;
+    margin-bottom: 10px;
+    animation: bounce 2s infinite alternate;
+}
+@keyframes bounce {
+    0% {transform: translateY(0);}
+    50% {transform: translateY(-15px);}
+    100% {transform: translateY(0);}
+}
+
+/* --- TIMER --- */
+.timer {
+    text-align: right;
+    font-size: 28px;
+    font-weight: bold;
+    color: #ff0000;
+    text-shadow: 1px 1px #fff;
+    margin-bottom: 10px;
+}
+.timer.alert { color: #ff8800; animation: pulse 1s infinite; }
+@keyframes pulse {
+    0% {transform: scale(1);}
+    50% {transform: scale(1.2);}
+    100% {transform: scale(1);}
+}
+
+/* --- BUTTONS --- */
+button {
+    padding: 12px 25px;
+    font-size: 20px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    margin: 8px;
+    box-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+    transition: all 0.3s ease;
+}
+button:hover { transform: scale(1.1) rotate(-2deg); }
+.test-btn {
+    background: linear-gradient(45deg, #ff9a9e, #fad0c4);
+    color: #fff;
+}
+.test-btn.completed { background: linear-gradient(45deg, #00c851, #007e33); color: #fff; }
+button.submit-btn { background: linear-gradient(45deg, #33b5e5, #0099cc); color: #fff; }
+button.nav-btn { background: linear-gradient(45deg, #ffbb33, #ff8800); color: #fff; }
+
+/* --- TEST BOX --- */
+.test-box {
+    background: linear-gradient(120deg, #ffffff, #ffe6f2);
+    border-radius: 20px;
+    padding: 25px;
+    margin: 20px 0;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    animation: fadeIn 0.5s;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+.test-box .big-penguin {
+    font-size: 100px;
+    margin-right: 20px;
+    animation: bounce 2s infinite alternate-reverse;
+}
+.test-box #questionContainer {
+    flex: 1;
+}
+.test-box h3 { font-size: 32px; }
+.option { margin: 15px 0; font-size: 26px; }
+.option input { transform: scale(1.5); margin-right: 12px; }
+
+/* --- RESULT BOX --- */
+.result-box {
+    background: linear-gradient(120deg, #ffffff, #d0f0ff);
+    border-radius: 20px;
+    padding: 25px;
+    margin: 20px 0;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    font-size: 24px;
+    text-align: center;
+}
+
+/* --- FADE IN --- */
+@keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
+
+</style>
+</head>
+
+<body>
+
+<!-- SELECT TEST PAGE -->
+<div id="selectPage" class="page">
+    <div class="header-emojis">
+        <div class="small-animals">🐼 🐵 🐧 🐯 🐶</div>
+        <div class="big-penguin">🐧</div>
+    </div>
+    <h2>Select a Test (1–20)</h2>
+    <center id="testButtons"></center>
+</div>
+
+<!-- TEST PAGE -->
+<div id="testPage" class="page" style="display:none;">
+    <div class="header-emojis">
+        <div class="small-animals">🐼 🐵 🐧 🐯 🐶</div>
+    </div>
+    <h2 id="testTitle"></h2>
+    <div class="timer" id="timer">10:00</div>
+    <div class="test-box">
+        <div class="big-penguin">🐧</div>
+        <div id="questionContainer"></div>
+    </div>
+    <center>
+        <button class="nav-btn" onclick="prevQuestion()">Previous</button>
+        <button class="nav-btn" onclick="nextQuestion()">Next</button>
+        <button class="submit-btn" onclick="submitTest()">Submit Test</button>
+        <button class="nav-btn" onclick="backToMenu()">Back to Menu</button>
+    </center>
+</div>
+
+<!-- RESULT PAGE -->
+<div id="resultPage" class="page" style="display:none;">
+    <div class="header-emojis">
+        <div class="small-animals">🐼 🐵 🐧 🐯 🐶</div>
+        <div class="big-penguin">🐧</div>
+    </div>
+    <h2>Test Result</h2>
+    <div class="result-box" id="resultBox"></div>
+    <center>
+        <button class="nav-btn" onclick="backToMenu()">Back to Menu</button>
+    </center>
+</div>
+
+<script>
+let currentTest=1, totalTests=20, currentQuestion=1, totalQuestions=50;
+let questions=[], timerInterval, timeLeft=600, startTime, endTime;
+
+function createTestButtons(){
+    let container=document.getElementById("testButtons");
+    for(let i=1;i<=20;i++){
+        let btn=document.createElement("button");
+        btn.id="testBtn"+i; btn.className="test-btn";
+        btn.innerText="Test "+i; btn.onclick=()=>startTest(i);
+        container.appendChild(btn);
+    }
+}
+createTestButtons();
+
+// EASY QUESTIONS: numbers 1-30, mostly + and -
+function generateExpression(){
+    let parts=[]; let count=Math.random()>0.7?4:3;
+    for(let i=0;i<count;i++) parts.push(Math.floor(Math.random()*30)+1);
+    let expr=""+parts[0];
+    for(let i=1;i<parts.length;i++) expr+=(Math.random()>0.5?"+":"-")+parts[i];
+    return expr;
+}
+function generateOptions(correct){
+    let options=[correct];
+    while(options.length<4){
+        let wrong=correct+Math.floor(Math.random()*11)-5;
+        if(!options.includes(wrong)) options.push(wrong);
+    }
+    return options.sort(()=>Math.random()-0.5);
+}
+function generateQuestions(){
+    questions=[];
+    for(let i=1;i<=50;i++){
+        let expr=generateExpression();
+        let correct=eval(expr);
+        let options=generateOptions(correct);
+        questions.push({q:expr, ans:correct, options:options, selected:null});
+    }
+}
+
+function showQuestion(){
+    let q=questions[currentQuestion-1];
+    let html=`<h3>Q${currentQuestion}: ${q.q}</h3>`;
+    q.options.forEach(opt=>{
+        html+=`<div class="option"><label><input type="radio" name="q${currentQuestion}" value="${opt}">${opt}</label></div>`;
+    });
+    document.getElementById("questionContainer").innerHTML=html;
+    if(q.selected){
+        document.querySelector(`input[name="q${currentQuestion}"][value="${q.selected}"]`).checked=true;
+    }
+}
+
+function startTest(num){
+    currentTest=num; currentQuestion=1;
+    document.getElementById("selectPage").style.display="none";
+    document.getElementById("testPage").style.display="block";
+    document.getElementById("testTitle").innerText=`Test ${num} of 20`;
+    generateQuestions(); showQuestion(); resetTimer();
+    startTime=new Date();
+}
+
+function resetTimer(){
+    clearInterval(timerInterval); timeLeft=600; updateTimer();
+    timerInterval=setInterval(()=>{
+        timeLeft--; updateTimer();
+        if(timeLeft<=0) submitTest();
+    },1000);
+}
+
+function updateTimer(){
+    let m=Math.floor(timeLeft/60), s=timeLeft%60;
+    let timer=document.getElementById("timer");
+    timer.innerText=`${m}:${s<10?"0"+s:s}`;
+    if(timeLeft<=60) timer.classList.add("alert");
+    else timer.classList.remove("alert");
+}
+
+function saveAnswer(){
+    let selected=document.querySelector(`input[name="q${currentQuestion}"]:checked`);
+    questions[currentQuestion-1].selected=selected?selected.value:null;
+}
+
+function nextQuestion(){ saveAnswer(); if(currentQuestion<totalQuestions) currentQuestion++; showQuestion(); }
+function prevQuestion(){ saveAnswer(); if(currentQuestion>1) currentQuestion--; showQuestion(); }
+document.addEventListener("keydown",(e)=>{if(e.key==="ArrowRight") nextQuestion(); if(e.key==="ArrowLeft") prevQuestion();});
+
+function submitTest(){
+    clearInterval(timerInterval); saveAnswer(); endTime=new Date();
+    let timeTaken=Math.floor((endTime-startTime)/1000), attempted=0, correct=0, wrong=0;
+    questions.forEach(q=>{if(q.selected){attempted++; if(parseInt(q.selected)===q.ans) correct++; else wrong++;}});
+    let marks=correct;
+    let min=Math.floor(timeTaken/60), sec=timeTaken%60;
+    document.getElementById("resultBox").innerHTML=`
+        <p><b>Time Taken:</b> ${min} min ${sec} sec</p>
+        <p><b>Attempted:</b> ${attempted}</p>
+        <p><b>Correct:</b> ${correct}</p>
+        <p><b>Wrong:</b> ${wrong}</p>
+        <p><b>Final Marks:</b> ${marks} / 50</p>
+    `;
+    document.getElementById("testBtn"+currentTest).classList.add("completed");
+    document.getElementById("testPage").style.display="none";
+    document.getElementById("resultPage").style.display="block";
+}
+
+function backToMenu(){
+    clearInterval(timerInterval);
+    document.getElementById("testPage").style.display="none";
+    document.getElementById("resultPage").style.display="none";
+    document.getElementById("selectPage").style.display="block";
+}
+</script>
+</body>
+</html>
